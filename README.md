@@ -1,1 +1,1 @@
-# hexlet-django-blog
+# Блог для статей
