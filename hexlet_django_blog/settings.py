@@ -37,7 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hexlet_django_blog'
+    'bootstrap5',
+    'django_extensions',
+    'hexlet_django_blog',
+    'articles',
+    'categories',
 ]
 
 MIDDLEWARE = [

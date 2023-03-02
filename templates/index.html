@@ -1,0 +1,19 @@
+{% load bootstrap5 %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Django simple blog</title>
+        {% bootstrap_css %}
+    </head>
+    <body class="bg-light">
+        <div class="container mt-4">
+            <a href="{% url 'about' %}">About</a>
+            <a href="{% url 'articles' %}">Articles</a>
+            <a href="{% url 'categories' %}">Categories</a>
+        </div>
+    </body>
+</html>
