@@ -59,3 +59,13 @@ class CategoryEditView(View):
             'form': form,
             'category_id': category_id
         })
+
+
+class CategoryDestroyView(View):
+
+    def post(self, request, *args, **kwargs):
+        category_id = kwargs.get('id')
+        category = Category.objects.get(id=category_id)
+        if category:
+            category.delete()
+        return redirect('categories_index')
