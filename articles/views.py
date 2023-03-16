@@ -1,30 +1,27 @@
-from django.http import Http404
-from django.shortcuts import render
-from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404, render
+from django.views import View
+from articles.models import Article
+from django.db.models import Q
 
 
-articles = [
-    {'id': 1, 'title': '"How to foo?"', 'author': 'F. BarBaz'},
-    {'id': 2, 'title': '"Force 101"', 'author': 'O-W. Kenobi'},
-    {'id': 3, 'title': '"Top 10 skyscrapers"', 'author': 'K. Kong'},
-    {'id': 4, 'title': '"Top 10 skyscrapers (jp. edition)"', 'author': 'K. Godzilla'},
-    {'id': 5, 'title': '"5 min recepies"', 'author': 'H. Lector'},
-]
+class IndexView(View):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q', '')
+        articles = Article.objects.filter(Q(title__icontains=query))
+        return render(
+            request,
+            'articles/index.html',
+            context={
+                'articles': articles,
+                'query': query,
+                }
+            )
 
 
-@require_http_methods(['GET', 'POST'])
-def index(request):
-    if request.method == 'POST':
-        article = {
-            'id': int(request.POST['id']),
-            'title': request.POST['title'],
-            'author': request.POST['author']
-        }
-        articles.append(article)
-    return render(request, 'articles/index.html', context={'articles': articles})
+class ArticleView(View):
 
-# BEGIN (write your solution here)
-@require_http_methods(['GET'])
-def get_article_by_id(article_id):
-    pass
-# END
+    def get(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, id=kwargs['id'])
+        return render(request, 'articles/article.html', context={
+            'article': article,
+        })

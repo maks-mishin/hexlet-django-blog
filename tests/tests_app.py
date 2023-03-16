@@ -1,19 +1,52 @@
 from django.test import TestCase
-
-ARTICLE = {'id': 13, 'title': 'Be or Not to Be', 'author': 'Hamlet'}
-TEXT_404 = '<a href="/">Home</a>'
+from categories.models import Category
 
 
-class AppTest(TestCase):
-    def test_article_view(self):
-        self.client.post('/articles/', data=ARTICLE)
-        response = self.client.get('/articles/13/')
+class CategoriesTest(TestCase):
+
+    def test_category_view_has_create_link(self):
+        response = self.client.get('/categories/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'articles/article.html')
-        response = self.client.post('/articles/13/')
-        self.assertEqual(response.status_code, 405)
+        self.assertContains(response, '/categories/create/')
 
-    def test_404(self):
-        response = self.client.get('/articles/404/')
-        self.assertEqual(response.status_code, 404)
-        self.assertContains(response, TEXT_404, status_code=404)
+    def test_category_create_view(self):
+        response = self.client.get('/categories/create/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_category_create_post_with_validation_errors(self):
+        params = {
+            'name': 'b',
+            'state': 'draft'
+        }
+        response = self.client.post('/categories/create/', data=params)
+        self.assertIn('description', response.context['form'].errors)
+
+        params = {
+            'name': 'name' * 26,
+            'description': 'lala' * 50,
+            'state': 'draft'
+        }
+        response = self.client.post('/categories/create/', data=params)
+        self.assertIn('name', response.context['form'].errors)
+
+        params = {
+            'name': 'name',
+            'description': 'lala' * 50,
+            'state': 'drift'
+        }
+        response = self.client.post('/categories/create/', data=params)
+        self.assertIn('state', response.context['form'].errors)
+
+    def test_category_create(self):
+        params = {
+            'name': 'a',
+            'description': 'lala' * 50,
+            'state': 'draft',
+        }
+        response = self.client.post(
+            '/categories/create/',
+            data=params,
+        )
+        self.assertEqual(response.status_code, 302)
+        created_category = Category.objects.get(name='a')
+        self.assertEqual(created_category.name, params['name'])

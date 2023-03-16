@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% load bootstrap4 i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1>Список статей</h1>
+    <form class="form-inline mb-3" action="{% url 'articles_index' %}" method="get">
+    <div class="form-group">
+      <input class="form-control" type="search" name="q" value="{{query }}" placeholder="Название статьи">
+    </div>
+      <button class="btn btn-info" type="submit">Поиск</button>
+    </form>
+    <ul>
+      {% for article in articles %}
+      <li>
+        <h2>{{ article.title }}</h2>
+        <a href="{% url 'articles_detail' article.id %}">Читать</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock content %}
