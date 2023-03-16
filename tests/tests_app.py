@@ -1,24 +1,31 @@
 from django.test import TestCase
 from categories.models import Category
+from hexlet_django_blog.factories import CategoryFactory
 
 
 class CategoriesTest(TestCase):
 
-    def test_category_view_has_create_link(self):
+    def setUp(self):
+        self.category = CategoryFactory()
+
+    def test_category_view_has_update_link(self):
         response = self.client.get('/categories/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '/categories/create/')
+        self.assertContains(response, f'{self.category.id}/update/')
 
-    def test_category_create_view(self):
-        response = self.client.get('/categories/create/')
+    def test_category_update_view(self):
+        response = self.client.get(f'/categories/{self.category.id}/update/')
         self.assertEqual(response.status_code, 200)
 
-    def test_category_create_post_with_validation_errors(self):
+    def test_category_update_post_with_validation_errors(self):
         params = {
             'name': 'b',
             'state': 'draft'
         }
-        response = self.client.post('/categories/create/', data=params)
+        response = self.client.post(
+            f'/categories/{self.category.id}/update/',
+            data=params
+        )
         self.assertIn('description', response.context['form'].errors)
 
         params = {
@@ -26,7 +33,10 @@ class CategoriesTest(TestCase):
             'description': 'lala' * 50,
             'state': 'draft'
         }
-        response = self.client.post('/categories/create/', data=params)
+        response = self.client.post(
+            f'/categories/{self.category.id}/update/',
+            data=params
+        )
         self.assertIn('name', response.context['form'].errors)
 
         params = {
@@ -34,19 +44,22 @@ class CategoriesTest(TestCase):
             'description': 'lala' * 50,
             'state': 'drift'
         }
-        response = self.client.post('/categories/create/', data=params)
+        response = self.client.post(
+            f'/categories/{self.category.id}/update/',
+            data=params
+        )
         self.assertIn('state', response.context['form'].errors)
 
-    def test_category_create(self):
+    def test_category_update(self):
         params = {
             'name': 'a',
             'description': 'lala' * 50,
             'state': 'draft',
         }
         response = self.client.post(
-            '/categories/create/',
+            f'/categories/{self.category.id}/update/',
             data=params,
         )
         self.assertEqual(response.status_code, 302)
-        created_category = Category.objects.get(name='a')
-        self.assertEqual(created_category.name, params['name'])
+        updated_category = Category.objects.get(name='a')
+        self.assertEqual(updated_category.name, params['name'])

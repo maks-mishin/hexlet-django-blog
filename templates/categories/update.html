@@ -5,9 +5,9 @@
 {% block content %}
   <div class="container mt-4">
     {% include 'categories/errors.html' %}
-    <form action="{% url 'categories_create' %}" method="post">
+    <form action="{% url 'categories_update' id=category_id %}" method="post">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Создать">
+        <input type="submit" value="Сохранить">
     </form>
 {% endblock content %}

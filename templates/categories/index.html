@@ -13,6 +13,7 @@
         </a>
       </h2>
       <div>{{ category.description }}</div>
+      <a href="{% url 'categories_update' id=category.id %}">Edit</a>
     {% endfor %}
   </div>
 {% endblock content %}
